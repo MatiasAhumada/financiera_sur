@@ -4,16 +4,17 @@
   "private": true,
   "packageManager": "pnpm@10.20.0",
   "scripts": {
-    "dev": "next dev -p 3000 -H 0.0.0.0",
+    "dev": "next dev -p 3019 -H 0.0.0.0",
     "build": "next build",
-    "start": "next start -p 3000 -H 0.0.0.0",
+    "start": "next start -p 3019 -H 0.0.0.0",
     "lint": "eslint",
     "format": "prettier --write \"src/**/*.{ts,tsx,js,jsx,json,css}\" --ignore-path .prettierignore",
     "postinstall": "prisma generate",
     "migrate": "prisma migrate dev",
     "migrate:deploy": "prisma migrate deploy",
     "reset": "prisma migrate reset --force",
-    "studio": "prisma studio"
+    "studio": "prisma studio",
+    "seed": "prisma db seed"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"
