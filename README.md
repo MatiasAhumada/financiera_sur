@@ -97,6 +97,15 @@ pnpm lint             # Ejecuta ESLint
 pnpm build            # Build de producción
 ```
 
+El comando `pnpm reset` elimina y recrea la base de datos y ejecuta automáticamente `prisma/seed.ts`. El seed crea el administrador inicial:
+
+```text
+Email: admin@del-sur.local
+Contraseña: del-sur-admin-2026
+```
+
+Estas credenciales están definidas en el seed, no en variables de entorno. Deben cambiarse en `prisma/seed.ts` antes de un despliegue productivo.
+
 ## 📋 Primeros Pasos
 
 ### 1. Configurar Variables de Entorno
