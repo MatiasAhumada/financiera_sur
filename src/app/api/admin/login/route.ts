@@ -1,4 +1,0 @@
-import { NextResponse } from "next/server";
-import { createSession, verifyPassword } from "@/server/services/auth.service";
-import { prisma } from "@/lib/prisma";
-export async function POST(request: Request) { const { email, password } = await request.json(); const user = await prisma.adminUser.findUnique({ where: { email } }); if (!user || !user.active || !(await verifyPassword(password, user.passwordHash))) return NextResponse.json({ error: "Credenciales inválidas" }, { status: 401 }); const token = await createSession(user.id); const response = NextResponse.json({ ok: true, user: { name: user.name, email: user.email } }); response.cookies.set("ds_session", token, { httpOnly: true, sameSite: "lax", secure: process.env.NODE_ENV === "production", path: "/", maxAge: 60 * 60 * 8 }); return response; }
