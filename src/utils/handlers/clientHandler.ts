@@ -1,5 +1,5 @@
 import { AxiosError } from "axios";
-import { ExternalToast } from "sonner";
+import { ToastOptions } from "@/utils/toast.util";
 import {
   toastSuccess,
   toastError,
@@ -13,7 +13,7 @@ interface HandlerOptions {
   showToast?: boolean;
   messagePrefix?: string;
   defaultMessage?: string;
-  toastOptions?: Partial<ExternalToast>;
+  toastOptions?: ToastOptions;
 }
 
 function normalizeError(error: unknown): Error {
