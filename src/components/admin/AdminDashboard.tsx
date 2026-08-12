@@ -3,6 +3,10 @@ import Image from "next/image";
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
+import {
+  AdminSidebar,
+  type SidebarItem,
+} from "@/components/common/AdminSidebar";
 type Inquiry = {
   id: string;
   name: string;
@@ -16,10 +20,10 @@ type Inquiry = {
 type Product = { id: string; name: string; published: boolean; slug: string };
 type Plan = { id: string; name: string; active: boolean };
 async function logout() {
-  await fetch("/api/auth/logout", { method: "POST" });
+  await fetch("/api/sessions", { method: "DELETE" });
   window.location.href = "/login";
 }
-const tabs = [
+const tabs: SidebarItem[] = [
   { key: "overview", label: "Resumen" },
   { key: "inquiries", label: "Consultas" },
   { key: "products", label: "Productos" },
@@ -47,7 +51,8 @@ export function AdminDashboard() {
   const newInquiries = inquiries.filter((item) => item.status === "NEW").length;
   return (
     <main className="min-h-screen bg-[#F8F5EE] text-[#0B274E]">
-      <aside className="fixed inset-y-0 left-0 z-30 hidden w-72 flex-col justify-between bg-[#0B274E] p-7 text-white lg:flex">
+      <AdminSidebar items={tabs} activeKey={active} onSelect={setActive} />
+      <aside className="hidden">
         <a href="/">
           <Image
             src="/brand/logo-del-sur.png"
