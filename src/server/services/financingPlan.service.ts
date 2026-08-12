@@ -1,0 +1,2 @@
+import { financingPlanRepository, type FinancingPlanData } from "@/server/repository/financingPlan.repository";
+export const financingPlanService = { findAll: () => financingPlanRepository.findAll(), create: (data: FinancingPlanData) => financingPlanRepository.create(data), update: (id: string, data: Partial<FinancingPlanData>) => financingPlanRepository.update(id, data), delete: (id: string) => financingPlanRepository.delete(id) };

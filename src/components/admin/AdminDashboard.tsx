@@ -7,6 +7,7 @@ import {
   AdminSidebar,
   type SidebarItem,
 } from "@/components/common/AdminSidebar";
+import { FinancingPlansView } from "@/components/admin/FinancingPlansView";
 type Inquiry = {
   id: string;
   name: string;
@@ -155,6 +156,8 @@ export function AdminDashboard() {
                   `${item.name} · ${item.published ? "Publicado" : "Borrador"}`,
               )}
             />
+          ) : active === "plans" ? (
+            <FinancingPlansView />
           ) : (
             <EntityList
               title="Planes de financiación"
