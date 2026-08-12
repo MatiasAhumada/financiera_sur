@@ -43,10 +43,13 @@ export async function POST(request: Request) {
   const response = NextResponse.json({
     user: { name: user.name, email: user.email, role: user.role },
   });
+  const forwardedProtocol = request.headers.get("x-forwarded-proto");
+  const requestProtocol = new URL(request.url).protocol;
+  const secureCookie = forwardedProtocol === "https" || requestProtocol === "https:";
   response.cookies.set("ds_session", token, {
     httpOnly: true,
     sameSite: "lax",
-    secure: process.env.NODE_ENV === "production",
+    secure: secureCookie,
     path: "/",
     maxAge: 60 * 60 * 8,
   });
