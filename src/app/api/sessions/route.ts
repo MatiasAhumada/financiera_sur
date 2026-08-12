@@ -5,6 +5,7 @@ import {
   getSession,
   verifyPassword,
 } from "@/server/services/auth.service";
+import { createSessionSchema } from "@/validations/session.validation";
 
 export async function GET(request: Request) {
   const session = await getSession(request);
@@ -21,7 +22,13 @@ export async function GET(request: Request) {
   });
 }
 export async function POST(request: Request) {
-  const { email, password } = await request.json();
+  const parsed = createSessionSchema.safeParse(await request.json());
+  if (!parsed.success)
+    return NextResponse.json(
+      { error: "Credenciales inválidas" },
+      { status: 400 },
+    );
+  const { email, password } = parsed.data;
   const user = await prisma.adminUser.findUnique({ where: { email } });
   if (
     !user ||
