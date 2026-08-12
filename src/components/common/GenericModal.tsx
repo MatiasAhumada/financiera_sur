@@ -31,10 +31,10 @@ export function GenericModal({
   const isDark = variant === "dark";
   const shouldReduceMotion = useReducedMotion();
 
-  const bgClass = isDark ? "bg-onyx" : "bg-neutral-950";
-  const headerBgClass = isDark ? "bg-neutral-950" : "bg-neutral-900";
-  const footerBgClass = isDark ? "bg-neutral-950" : "bg-neutral-900";
-  const contentBgClass = isDark ? "bg-onyx" : "bg-neutral-950";
+  const bgClass = isDark ? "bg-[#0B274E] text-white" : "bg-[#F8F5EE] text-[#0B274E]";
+  const headerBgClass = isDark ? "bg-[#0B274E]" : "bg-white/60";
+  const footerBgClass = isDark ? "bg-[#0B274E]" : "bg-[#F0EBDD]";
+  const contentBgClass = isDark ? "bg-[#0B274E]" : "bg-[#F8F5EE]";
 
   const modalVariants: Variants = {
     hidden: { opacity: 0, scale: 0.95, y: 20 },
@@ -96,15 +96,15 @@ export function GenericModal({
             className="fixed inset-0 z-50 flex items-center justify-center p-4 pointer-events-none"
           >
             <div
-              className={`${bgClass} border border-neutral-800 rounded-xl shadow-2xl ${SIZE_CLASSES[size]} w-full max-h-[90vh] overflow-y-auto pointer-events-auto`}
+            className={`${bgClass} border ${isDark ? "border-white/15" : "border-[#0B274E]/10"} rounded-[1.75rem] shadow-[0_30px_90px_rgba(11,39,78,.24)] ${SIZE_CLASSES[size]} w-full max-h-[90vh] overflow-y-auto pointer-events-auto`}
             >
               <div
-                className={`flex items-center justify-between p-6 border-b border-neutral-800 ${headerBgClass}`}
+                className={`flex items-center justify-between p-6 border-b ${isDark ? "border-white/10" : "border-[#0B274E]/10"} ${headerBgClass}`}
               >
                 <div>
-                  <h2 className="text-lg font-semibold text-white">{title}</h2>
+                  <h2 className="font-serif text-3xl tracking-[-.02em]">{title}</h2>
                   {description && (
-                    <p className="text-sm text-neutral-400 mt-1">
+                    <p className={`mt-2 text-sm ${isDark ? "text-white/60" : "text-[#0B274E]/55"}`}>
                       {description}
                     </p>
                   )}
@@ -113,7 +113,7 @@ export function GenericModal({
                   variant="ghost"
                   size="icon"
                   onClick={() => onOpenChange(false)}
-                  className="text-neutral-400 hover:text-white hover:bg-neutral-800"
+                  className={`rounded-full ${isDark ? "text-white/60 hover:bg-white/10 hover:text-white" : "text-[#0B274E]/45 hover:bg-[#0B274E]/10 hover:text-[#0B274E]"}`}
                 >
                   <Cancel01Icon size={20} />
                 </Button>
@@ -121,7 +121,7 @@ export function GenericModal({
               <div className={`p-6 ${contentBgClass}`}>{children}</div>
               {footer && (
                 <div
-                  className={`flex justify-end gap-2 p-6 border-t border-neutral-800 ${footerBgClass}`}
+                  className={`flex justify-end gap-3 p-6 border-t ${isDark ? "border-white/10" : "border-[#0B274E]/10"} ${footerBgClass}`}
                 >
                   {footer}
                 </div>
@@ -173,7 +173,7 @@ export function ConfirmModal({
         </>
       }
     >
-      <p className="text-sm text-neutral-400">{description}</p>
+      <p className="text-sm leading-6 text-[#0B274E]/65">{description}</p>
     </GenericModal>
   );
 }

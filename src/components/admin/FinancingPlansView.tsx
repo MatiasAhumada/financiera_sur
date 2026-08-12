@@ -195,7 +195,7 @@ export function FinancingPlansView() {
         }
       >
         <form id="financing-plan-form" onSubmit={submit} className="grid gap-5">
-          <label className="grid gap-2 text-sm text-white">
+          <label className="grid gap-2 text-sm font-semibold text-[#0B274E]">
             Nombre
             <input
               required
@@ -203,10 +203,10 @@ export function FinancingPlansView() {
               onChange={(event) =>
                 setForm({ ...form, name: event.target.value })
               }
-              className="rounded-lg border border-neutral-700 bg-neutral-900 px-3 py-2 text-white outline-none focus:border-[#EBC05A]"
+              className="rounded-xl border border-[#0B274E]/15 bg-white px-3 py-3 text-[#0B274E] outline-none transition focus:border-[#8B702F] focus:ring-2 focus:ring-[#EBC05A]/30"
             />
           </label>
-          <label className="grid gap-2 text-sm text-white">
+          <label className="grid gap-2 text-sm font-semibold text-[#0B274E]">
             Descripción
             <textarea
               required
@@ -215,10 +215,10 @@ export function FinancingPlansView() {
                 setForm({ ...form, description: event.target.value })
               }
               rows={4}
-              className="resize-none rounded-lg border border-neutral-700 bg-neutral-900 px-3 py-2 text-white outline-none focus:border-[#EBC05A]"
+              className="resize-none rounded-xl border border-[#0B274E]/15 bg-white px-3 py-3 text-[#0B274E] outline-none transition focus:border-[#8B702F] focus:ring-2 focus:ring-[#EBC05A]/30"
             />
           </label>
-          <div className="flex items-center gap-3 text-sm text-white">
+          <div className="flex items-center gap-3 text-sm text-[#0B274E]">
             <input
               id="plan-active"
               type="checkbox"
