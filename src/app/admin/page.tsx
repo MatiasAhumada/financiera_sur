@@ -1,5 +1,11 @@
-"use client";
-import { useEffect, useState } from "react";
-import { Button } from "@/components/ui/button";
-type Inquiry = { id: string; name: string; email: string; phone: string; status: string; notificationStatus: string; createdAt: string; product?: { name: string } | null };
-export default function AdminPage() { const [email, setEmail] = useState(""); const [password, setPassword] = useState(""); const [items, setItems] = useState<Inquiry[]>([]); const [logged, setLogged] = useState(false); const [error, setError] = useState(""); async function login() { const r = await fetch("/api/admin/login", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ email, password }) }); if (!r.ok) return setError("Credenciales inválidas"); setLogged(true); load(); } async function load() { const r = await fetch("/api/admin/inquiries"); if (r.ok) setItems(await r.json()); } useEffect(() => { load(); }, []); return <main className="min-h-screen bg-[#0B274E] p-6 text-white lg:p-12"><div className="mx-auto max-w-6xl"><p className="text-xs uppercase tracking-[.3em] text-[#EBC05A]">Del Sur · Admin</p><h1 className="mt-3 font-serif text-5xl">Consultas</h1>{!logged ? <div className="mt-10 max-w-md rounded-2xl bg-white p-6 text-[#0B274E]"><label className="text-sm">Email<input value={email} onChange={(e) => setEmail(e.target.value)} type="email" className="mt-2 w-full border-b border-[#0B274E]/20 p-3 outline-none" /></label><label className="mt-5 block text-sm">Contraseña<input value={password} onChange={(e) => setPassword(e.target.value)} type="password" className="mt-2 w-full border-b border-[#0B274E]/20 p-3 outline-none" /></label><Button onClick={login} className="mt-5 w-full bg-[#0B274E] text-white">Ingresar</Button><p className="mt-3 text-sm text-red-700">{error}</p></div> : <div className="mt-10 overflow-x-auto rounded-2xl bg-white p-4 text-[#0B274E]"><table className="w-full min-w-[700px] text-left text-sm"><thead><tr className="border-b border-[#0B274E]/10"><th className="p-3">Fecha</th><th className="p-3">Nombre</th><th className="p-3">Contacto</th><th className="p-3">Producto</th><th className="p-3">Estado</th></tr></thead><tbody>{items.map((item) => <tr key={item.id} className="border-b border-[#0B274E]/10"><td className="p-3">{new Date(item.createdAt).toLocaleDateString("es-AR")}</td><td className="p-3 font-semibold">{item.name}</td><td className="p-3">{item.email}<br />{item.phone}</td><td className="p-3">{item.product?.name ?? "General"}</td><td className="p-3">{item.status} · {item.notificationStatus}</td></tr>)}</tbody></table>{items.length === 0 && <p className="p-8 text-center text-[#0B274E]/50">Todavía no hay consultas.</p>}</div>}</div></main>; }
+import { redirect } from "next/navigation";
+import { cookies } from "next/headers";
+import { AdminDashboard } from "@/components/admin/AdminDashboard";
+import { getSessionFromToken } from "@/server/services/auth.service";
+
+export default async function AdminPage() {
+  const cookieStore = await cookies();
+  const token = cookieStore.get("ds_session")?.value;
+  if (!token || !(await getSessionFromToken(token))) redirect("/login");
+  return <AdminDashboard />;
+}
