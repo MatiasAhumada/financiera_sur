@@ -7,18 +7,10 @@ import {
   AdminSidebar,
   type SidebarItem,
 } from "@/components/common/AdminSidebar";
-type Inquiry = {
-  id: string;
-  name: string;
-  email: string;
-  phone: string;
-  status: string;
-  notificationStatus: string;
-  createdAt: string;
-  product?: { name: string } | null;
-};
-type Product = { id: string; name: string; published: boolean; slug: string };
-type Plan = { id: string; name: string; active: boolean };
+import { FinancingPlansView } from "@/components/admin/FinancingPlansView";
+import type { Inquiry } from "@/interfaces/inquiry.interface";
+import type { AdminProduct } from "@/interfaces/product.interface";
+import type { FinancingPlan } from "@/interfaces/financingPlan.interface";
 async function logout() {
   await fetch("/api/sessions", { method: "DELETE" });
   window.location.href = "/login";
@@ -32,8 +24,8 @@ const tabs: SidebarItem[] = [
 export function AdminDashboard() {
   const [active, setActive] = useState("overview");
   const [inquiries, setInquiries] = useState<Inquiry[]>([]);
-  const [products, setProducts] = useState<Product[]>([]);
-  const [plans, setPlans] = useState<Plan[]>([]);
+  const [products, setProducts] = useState<AdminProduct[]>([]);
+  const [plans, setPlans] = useState<FinancingPlan[]>([]);
   const [loading, setLoading] = useState(true);
   useEffect(() => {
     Promise.all([
@@ -155,6 +147,8 @@ export function AdminDashboard() {
                   `${item.name} · ${item.published ? "Publicado" : "Borrador"}`,
               )}
             />
+          ) : active === "plans" ? (
+            <FinancingPlansView />
           ) : (
             <EntityList
               title="Planes de financiación"

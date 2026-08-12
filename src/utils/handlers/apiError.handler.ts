@@ -1,15 +1,10 @@
 import httpStatus from "http-status";
 import { NextRequest, NextResponse } from "next/server";
 import { CONFIG } from "@/constants/config.constant";
-
-interface ApiErrorOptions {
-  status?: number;
-  message?: string;
-  isOperational?: boolean;
-  stack?: string;
-  internalCode?: string;
-  details?: object | null;
-}
+import type {
+  ApiErrorOptions,
+  ResponseError,
+} from "@/interfaces/apiError.interface";
 
 const statusMessages: Record<number, string> = httpStatus;
 
@@ -40,16 +35,6 @@ export class ApiError extends Error {
   }
 }
 
-type ResponseError = {
-  message: string;
-  status: number;
-  instance: string;
-  method: string;
-  stack?: string;
-  internalCode?: string;
-  details?: object | null;
-};
-
 export default function apiErrorHandler({
   error,
   request,
@@ -62,7 +47,8 @@ export default function apiErrorHandler({
   let { status, message } = error;
   if (!error.isOperational) {
     status = httpStatus.INTERNAL_SERVER_ERROR;
-    message = fallbackMessage ?? statusMessages[httpStatus.INTERNAL_SERVER_ERROR];
+    message =
+      fallbackMessage ?? statusMessages[httpStatus.INTERNAL_SERVER_ERROR];
   }
   if (!message) message = fallbackMessage ?? statusMessages[status];
 
