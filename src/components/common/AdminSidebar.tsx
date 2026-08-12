@@ -2,6 +2,7 @@
 import Image from "next/image";
 import { motion } from "framer-motion";
 import type { SidebarItem } from "@/interfaces/sidebar.interface";
+import { ROUTES } from "@/constants/routes";
 interface AdminSidebarProps {
   items: SidebarItem[];
   activeKey: string;
@@ -14,7 +15,7 @@ export function AdminSidebar({
 }: AdminSidebarProps) {
   return (
     <aside className="fixed inset-y-0 left-0 z-30 hidden w-72 flex-col justify-between bg-[#0B274E] p-7 text-white lg:flex">
-      <a href="/">
+      <a href={ROUTES.HOME}>
         <Image
           src="/brand/logo-del-sur.png"
           alt="Del Sur Financiera"
@@ -38,7 +39,7 @@ export function AdminSidebar({
       </nav>
       <div className="grid gap-3 text-xs text-white/45">
         <span>Panel administrativo</span>
-        <a href="/" className="transition hover:text-[#FFDB5A]">
+        <a href={ROUTES.HOME} className="transition hover:text-[#FFDB5A]">
           ← Volver al sitio
         </a>
       </div>

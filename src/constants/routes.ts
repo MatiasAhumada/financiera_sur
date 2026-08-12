@@ -1,6 +1,7 @@
 export const ROUTES = {
   HOME: "/",
   LOGIN: "/login",
+  ADMIN: "/admin",
 } as const;
 
 export const ROUTE_LABELS: Record<string, string> = {

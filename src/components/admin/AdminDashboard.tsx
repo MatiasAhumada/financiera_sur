@@ -7,13 +7,11 @@ import type { SidebarItem } from "@/interfaces/sidebar.interface";
 import { FinancingPlansView } from "@/components/admin/FinancingPlansView";
 import type { Inquiry } from "@/interfaces/inquiry.interface";
 import type { AdminProduct } from "@/interfaces/product.interface";
-import type { FinancingPlan } from "@/interfaces/financingPlan.interface";
 import { inquiryClientService } from "@/services/inquiry.service";
 import { clientErrorHandler } from "@/utils/handlers/clientHandler";
 import { toastNotification } from "@/utils/toast.util";
 import { ADMIN_NOTIFICATION_POLL_INTERVAL_MS } from "@/constants/admin.constant";
 import { productClientService } from "@/services/product.service";
-import { financingPlanClientService } from "@/services/financingPlan.service";
 import { sessionClientService } from "@/services/session.service";
 import { ROUTES } from "@/constants/routes";
 
@@ -23,7 +21,6 @@ export function AdminDashboard() {
   const [active, setActive] = useState("overview");
   const [inquiries, setInquiries] = useState<Inquiry[]>([]);
   const [products, setProducts] = useState<AdminProduct[]>([]);
-  const [plans, setPlans] = useState<FinancingPlan[]>([]);
   const [unreadCount, setUnreadCount] = useState(0);
   const [loading, setLoading] = useState(true);
   const previousUnreadCount = useRef(0);
@@ -32,11 +29,11 @@ export function AdminDashboard() {
   useEffect(() => {
     const load = async () => {
       try {
-        const [inquiryResponse, productsResponse, plansResponse] = await Promise.all([inquiryClientService.list(), productClientService.list(), financingPlanClientService.list()]);
+        const [inquiryResponse, productsResponse] = await Promise.all([inquiryClientService.list(), productClientService.list()]);
         setInquiries(inquiryResponse.data.items); setUnreadCount(inquiryResponse.data.unreadCount);
         if (inquiryResponse.data.unreadCount > previousUnreadCount.current) toastNotification("Nuevas consultas", { description: `Hay ${inquiryResponse.data.unreadCount} consultas sin revisar.` });
         previousUnreadCount.current = inquiryResponse.data.unreadCount;
-        setProducts(productsResponse.data); setPlans(plansResponse.data);
+        setProducts(productsResponse.data);
       } catch (error) { clientErrorHandler(error); } finally { setLoading(false); }
     };
     void load(); const timer = window.setInterval(() => { void load(); }, ADMIN_NOTIFICATION_POLL_INTERVAL_MS); return () => window.clearInterval(timer);
