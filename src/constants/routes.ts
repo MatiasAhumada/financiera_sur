@@ -9,8 +9,13 @@ export const ROUTE_LABELS: Record<string, string> = {
 } as const;
 
 export const API_ROUTES = {
-  AUTH: {
-    SESSION: "/api/session",
+  SESSIONS: "/api/sessions",
+  INQUIRIES: "/api/inquiries",
+  ADMIN: {
+    INQUIRIES: "/api/admin/inquiries",
+    INQUIRY: (id: string) => `/api/admin/inquiries/${id}`,
+    PRODUCTS: "/api/admin/products",
+    FINANCING_PLANS: "/api/admin/financing-plans",
+    FINANCING_PLAN: (id: string) => `/api/admin/financing-plans/${id}`,
   },
-  USERS: "/api/users",
 } as const;

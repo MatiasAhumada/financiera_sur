@@ -3,14 +3,10 @@ import { FormEvent, useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { GenericModal, ConfirmModal } from "@/components/common";
+import { financingPlanClientService } from "@/services/financingPlan.service";
+import { clientErrorHandler } from "@/utils/handlers/clientHandler";
 
-import type {
-  FinancingPlan,
-  FinancingPlanForm,
-} from "@/interfaces/financingPlan.interface";
-interface FinancingPlanResponse extends FinancingPlan {
-  _count?: { products: number };
-}
+import type { FinancingPlanForm, FinancingPlanResponse } from "@/interfaces/financingPlan.interface";
 const emptyForm: FinancingPlanForm = {
   name: "",
   description: "",
@@ -28,8 +24,8 @@ export function FinancingPlansView() {
   const [deleting, setDeleting] = useState<FinancingPlanResponse | null>(null);
   const [formOpen, setFormOpen] = useState(false);
   async function load() {
-    const response = await fetch("/api/admin/financing-plans");
-    if (response.ok) setPlans(await response.json());
+    const response = await financingPlanClientService.list();
+    setPlans(response.data);
   }
   useEffect(() => {
     load().finally(() => setLoading(false));
@@ -55,37 +51,26 @@ export function FinancingPlansView() {
     event.preventDefault();
     setSaving(true);
     setError("");
-    const response = await fetch(
-      editing
-        ? `/api/admin/financing-plans/${editing.id}`
-        : "/api/admin/financing-plans",
-      {
-        method: editing ? "PATCH" : "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form),
-      },
-    );
-    setSaving(false);
-    if (!response.ok) {
-      setError("No se pudo guardar el plan.");
+    try {
+      if (editing) await financingPlanClientService.update(editing.id, form);
+      else await financingPlanClientService.create(form);
+    } catch (requestError) {
+      clientErrorHandler(requestError, () => setError("No se pudo guardar el plan."));
+      setSaving(false);
       return;
     }
+    setSaving(false);
     await load();
-    setEditing(null);
-    setForm({ ...emptyForm });
-    setFormOpen(false);
+    setEditing(null); setForm({ ...emptyForm }); setFormOpen(false);
   }
   async function remove() {
     if (!deleting) return;
     setSaving(true);
-    const response = await fetch(`/api/admin/financing-plans/${deleting.id}`, {
-      method: "DELETE",
-    });
-    setSaving(false);
-    if (response.ok) {
+    try {
+      await financingPlanClientService.remove(deleting.id);
       setPlans((current) => current.filter((plan) => plan.id !== deleting.id));
       setDeleting(null);
-    }
+    } catch (requestError) { clientErrorHandler(requestError); } finally { setSaving(false); }
   }
   return (
     <div className="grid gap-6">

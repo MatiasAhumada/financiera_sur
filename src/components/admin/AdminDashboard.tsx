@@ -12,6 +12,10 @@ import { inquiryClientService } from "@/services/inquiry.service";
 import { clientErrorHandler } from "@/utils/handlers/clientHandler";
 import { toastNotification } from "@/utils/toast.util";
 import { ADMIN_NOTIFICATION_POLL_INTERVAL_MS } from "@/constants/admin.constant";
+import { productClientService } from "@/services/product.service";
+import { financingPlanClientService } from "@/services/financingPlan.service";
+import { sessionClientService } from "@/services/session.service";
+import { ROUTES } from "@/constants/routes";
 
 const tabs: SidebarItem[] = [{ key: "overview", label: "Resumen" }, { key: "inquiries", label: "Consultas" }, { key: "products", label: "Productos" }, { key: "plans", label: "Financiación" }];
 
@@ -28,11 +32,11 @@ export function AdminDashboard() {
   useEffect(() => {
     const load = async () => {
       try {
-        const [inquiryResponse, productsResponse, plansResponse] = await Promise.all([inquiryClientService.list(), fetch("/api/admin/products"), fetch("/api/admin/financing-plans")]);
+        const [inquiryResponse, productsResponse, plansResponse] = await Promise.all([inquiryClientService.list(), productClientService.list(), financingPlanClientService.list()]);
         setInquiries(inquiryResponse.data.items); setUnreadCount(inquiryResponse.data.unreadCount);
         if (inquiryResponse.data.unreadCount > previousUnreadCount.current) toastNotification("Nuevas consultas", { description: `Hay ${inquiryResponse.data.unreadCount} consultas sin revisar.` });
         previousUnreadCount.current = inquiryResponse.data.unreadCount;
-        if (productsResponse.ok) setProducts(await productsResponse.json()); if (plansResponse.ok) setPlans(await plansResponse.json());
+        setProducts(productsResponse.data); setPlans(plansResponse.data);
       } catch (error) { clientErrorHandler(error); } finally { setLoading(false); }
     };
     void load(); const timer = window.setInterval(() => { void load(); }, ADMIN_NOTIFICATION_POLL_INTERVAL_MS); return () => window.clearInterval(timer);
@@ -43,7 +47,7 @@ export function AdminDashboard() {
     void inquiryClientService.markAllAsRead().then(() => { setUnreadCount(0); previousUnreadCount.current = 0; setInquiries((items) => items.map((item) => ({ ...item, isRead: true }))); }).catch(clientErrorHandler);
   }, [active, unreadCount]);
 
-  async function logout() { await fetch("/api/sessions", { method: "DELETE" }); window.location.href = "/login"; }
+  async function logout() { await sessionClientService.remove(); window.location.assign(ROUTES.LOGIN); }
   const newInquiries = inquiries.filter((item) => item.status === "NEW").length;
   return <main className="min-h-screen bg-[#F8F5EE] text-[#0B274E]"><AdminSidebar items={navigation} activeKey={active} onSelect={setActive} /><div className="lg:pl-72"><header className="flex items-center justify-between border-b border-[#0B274E]/10 bg-[#F8F5EE]/85 px-6 py-5 backdrop-blur lg:px-12"><div><p className="text-xs font-bold uppercase tracking-[.28em] text-[#8B702F]">Del Sur · Admin</p><h1 className="mt-2 font-serif text-4xl">{tabs.find((tab) => tab.key === active)?.label}</h1></div><Button variant="outline" className="rounded-full border-[#0B274E]/20" onClick={logout}>Cerrar sesión</Button></header><div className="flex gap-2 overflow-x-auto border-b border-[#0B274E]/10 px-6 py-3 lg:hidden">{navigation.map((tab) => <button key={tab.key} onClick={() => setActive(tab.key)} className={`whitespace-nowrap rounded-full px-4 py-2 text-xs ${active === tab.key ? "bg-[#0B274E] text-white" : "bg-[#0B274E]/5"}`}>{tab.label}{tab.badge ? ` (${tab.badge})` : ""}</button>)}</div><motion.section key={active} initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} className="p-6 lg:p-12">{loading ? <div className="rounded-2xl bg-white p-10 text-sm text-[#0B274E]/50">Cargando datos reales…</div> : active === "overview" ? <div className="grid gap-6 md:grid-cols-3"><Metric label="Consultas totales" value={inquiries.length} /><Metric label="Nuevas" value={newInquiries} accent /><Metric label="Productos publicados" value={products.filter((item) => item.published).length} /><div className="md:col-span-3 rounded-3xl bg-[#0B274E] p-8 text-white"><p className="text-xs uppercase tracking-[.25em] text-[#EBC05A]">Actividad reciente</p><h2 className="mt-3 font-serif text-3xl">{inquiries.length ? `Hay ${inquiries.length} consultas registradas.` : "Todavía no hay consultas registradas."}</h2><button onClick={() => setActive("inquiries")} className="mt-6 text-sm text-[#FFDB5A] underline-offset-4 hover:underline">Ver historial →</button></div></div> : active === "inquiries" ? <InquiryTable items={inquiries} /> : active === "products" ? <EntityList title="Productos" empty="Todavía no hay productos creados." items={products.map((item) => `${item.name} · ${item.published ? "Publicado" : "Borrador"}`)} /> : <FinancingPlansView />}</motion.section></div></main>;
 }
