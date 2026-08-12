@@ -1,0 +1,134 @@
+"use client";
+import Image from "next/image";
+import { FormEvent, useState } from "react";
+import { useRouter } from "next/navigation";
+import { motion } from "framer-motion";
+import { Button } from "@/components/ui/button";
+
+export default function LoginPage() {
+  const router = useRouter();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+  async function submit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setLoading(true);
+    setError("");
+    const response = await fetch("/api/sessions", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, password }),
+    });
+    setLoading(false);
+    if (!response.ok) {
+      setError("El email o la contraseña no son correctos.");
+      return;
+    }
+    router.replace("/admin");
+  }
+  return (
+    <main className="grid min-h-screen bg-[#0B274E] text-white lg:grid-cols-[1.05fr_.95fr]">
+      <section className="relative hidden overflow-hidden lg:flex lg:flex-col lg:justify-between lg:p-12">
+        <div className="absolute -left-24 -top-24 size-96 rounded-full bg-[#EBC05A]/10 blur-3xl" />
+        <a href="/" className="relative">
+          <Image
+            src="/brand/logo-del-sur.png"
+            alt="Del Sur Financiera"
+            width={220}
+            height={118}
+            className="h-24 w-auto object-contain"
+            priority
+          />
+        </a>
+        <div className="relative max-w-lg pb-10">
+          <p className="text-xs font-bold uppercase tracking-[.3em] text-[#EBC05A]">
+            Acceso privado
+          </p>
+          <h1 className="mt-5 font-serif text-6xl leading-[.9] tracking-[-.05em]">
+            Donde las consultas se convierten en oportunidades.
+          </h1>
+          <p className="mt-6 max-w-md leading-7 text-white/60">
+            Gestioná productos, planes de financiación y el seguimiento de cada
+            contacto.
+          </p>
+        </div>
+        <p className="relative text-xs text-white/40">Del Sur · Financiera</p>
+      </section>
+      <section className="flex items-center justify-center bg-[#F8F5EE] px-6 py-12 text-[#0B274E]">
+        <motion.div
+          initial={{ opacity: 0, y: 18 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.55 }}
+          className="w-full max-w-md"
+        >
+          <div className="mb-10 lg:hidden">
+            <Image
+              src="/brand/logo-del-sur.png"
+              alt="Del Sur Financiera"
+              width={190}
+              height={102}
+              className="h-20 w-auto object-contain"
+            />
+          </div>
+          <p className="text-xs font-bold uppercase tracking-[.3em] text-[#8B702F]">
+            Panel administrativo
+          </p>
+          <h2 className="mt-4 font-serif text-5xl leading-none">
+            Iniciar sesión
+          </h2>
+          <p className="mt-4 text-sm text-[#0B274E]/55">
+            Ingresá para continuar con la gestión de Del Sur.
+          </p>
+          <form onSubmit={submit} className="mt-10 grid gap-6">
+            <label className="grid gap-2 text-sm font-medium">
+              Email
+              <input
+                required
+                value={email}
+                onChange={(event) => setEmail(event.target.value)}
+                type="email"
+                autoComplete="email"
+                className="border-b border-[#0B274E]/20 bg-transparent px-1 py-3 outline-none transition-colors focus:border-[#8B702F]"
+              />
+            </label>
+            <label className="grid gap-2 text-sm font-medium">
+              Contraseña
+              <input
+                required
+                value={password}
+                onChange={(event) => setPassword(event.target.value)}
+                type="password"
+                autoComplete="current-password"
+                className="border-b border-[#0B274E]/20 bg-transparent px-1 py-3 outline-none transition-colors focus:border-[#8B702F]"
+              />
+            </label>
+            {error && (
+              <p
+                role="alert"
+                className="rounded-xl bg-red-950/10 px-4 py-3 text-sm text-red-800"
+              >
+                {error}
+              </p>
+            )}
+            <motion.div whileHover={{ y: -2 }} whileTap={{ scale: 0.98 }}>
+              <Button
+                disabled={loading}
+                size="lg"
+                className="w-full rounded-full bg-[#0B274E] text-white hover:bg-[#143964]"
+              >
+                {loading ? "Ingresando…" : "Ingresar al panel"} ↗
+              </Button>
+            </motion.div>
+          </form>
+          <a
+            href="/"
+            className="mt-8 block text-center text-sm text-[#0B274E]/55 transition hover:text-[#8B702F]"
+          >
+            ← Volver al sitio
+          </a>
+        </motion.div>
+      </section>
+    </main>
+  );
+}
