@@ -4,6 +4,9 @@ import Image from "next/image";
 import { FormEvent, useRef, useState } from "react";
 import { motion, useScroll, useTransform, type Variants } from "framer-motion";
 import { Button } from "@/components/ui/button";
+import { inquiryClientService } from "@/services/inquiry.service";
+import { clientErrorHandler } from "@/utils/handlers/clientHandler";
+import { toastSuccess } from "@/utils/toast.util";
 
 const reveal: Variants = { hidden: { opacity: 0, y: 28 }, visible: { opacity: 1, y: 0, transition: { duration: 0.65, ease: "easeOut" } } };
 const stagger: Variants = { hidden: {}, visible: { transition: { staggerChildren: 0.12 } } };
@@ -21,8 +24,7 @@ export default function Home() {
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault(); setLoading(true);
     const form = new FormData(event.currentTarget);
-    const response = await fetch("/api/inquiries", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(Object.fromEntries(form)) });
-    setLoading(false); if (response.ok) { setSent(true); event.currentTarget.reset(); }
+    try { await inquiryClientService.create(Object.fromEntries(form) as { name: string; email: string; phone: string; message?: string; website?: string }); setSent(true); event.currentTarget.reset(); toastSuccess("Consulta enviada", { description: "Un asesor se pondrá en contacto con vos." }); } catch (error) { clientErrorHandler(error); } finally { setLoading(false); }
   }
   return <main className="min-h-screen overflow-hidden bg-[#0B274E] text-white">
     <motion.nav initial={{ opacity: 0, y: -16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: .6 }} className="fixed inset-x-0 top-0 z-40 border-b border-white/10 bg-[#0B274E]/75 px-6 py-4 backdrop-blur-xl lg:px-10"><div className="mx-auto flex max-w-7xl items-center justify-between"><a href="#inicio" aria-label="Del Sur inicio"><Image src="/brand/logo-del-sur.png" alt="Del Sur Financiera" width={154} height={82} className="h-14 w-auto object-contain" priority /></a><div className="flex items-center gap-3"><a href="#consulta" className="hidden rounded-full border border-[#EBC05A]/45 px-5 py-2 text-sm font-semibold text-[#FFDB5A] transition hover:bg-[#EBC05A] hover:text-[#0B274E] sm:block">Hablar con un asesor</a><motion.a whileHover={{ y: -2 }} whileTap={{ scale: .97 }} href="/admin" className="rounded-full bg-[#EBC05A] px-4 py-2 text-sm font-bold text-[#0B274E] transition hover:bg-[#FFDB5A]">Iniciar sesión</motion.a></div></div></motion.nav>

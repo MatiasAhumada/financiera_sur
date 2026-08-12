@@ -8,4 +8,10 @@ export const inquiryService = {
     return inquiry;
   },
   findAll() { return inquiryRepository.findAll(); },
+  async list() {
+    const [items, unreadCount] = await Promise.all([inquiryRepository.findAll(), inquiryRepository.countUnread()]);
+    return { items, unreadCount };
+  },
+  markAllAsRead() { return inquiryRepository.markAllAsRead(); },
+  update(id: string, data: { status?: "NEW" | "CONTACTED" | "QUALIFIED" | "CLOSED" | "LOST"; isRead?: boolean }) { return inquiryRepository.update(id, data); },
 };

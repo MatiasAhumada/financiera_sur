@@ -1,11 +1,7 @@
 "use client";
 import Image from "next/image";
 import { motion } from "framer-motion";
-
-export interface SidebarItem {
-  key: string;
-  label: string;
-}
+import type { SidebarItem } from "@/interfaces/sidebar.interface";
 interface AdminSidebarProps {
   items: SidebarItem[];
   activeKey: string;
@@ -36,7 +32,7 @@ export function AdminSidebar({
             onClick={() => onSelect(item.key)}
             className={`rounded-xl px-4 py-3 text-left text-sm transition ${activeKey === item.key ? "bg-[#EBC05A] font-bold text-[#0B274E]" : "text-white/65 hover:bg-white/10 hover:text-white"}`}
           >
-            {item.label}
+            <span className="flex items-center justify-between gap-3">{item.label}{item.badge ? <span className="min-w-6 rounded-full bg-[#FFDB5A] px-2 py-0.5 text-center text-xs font-bold text-[#0B274E]">{item.badge}</span> : null}</span>
           </motion.button>
         ))}
       </nav>

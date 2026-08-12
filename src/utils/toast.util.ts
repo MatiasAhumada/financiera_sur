@@ -32,3 +32,4 @@ export function toastInfo(message: string, options?: ToastOptions) {
     duration: options?.duration,
   });
 }
+export function toastNotification(message: string, options?: ToastOptions) { toast.info(message, { description: options?.description, duration: options?.duration ?? 6000 }); }

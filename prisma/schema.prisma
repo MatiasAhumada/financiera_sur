@@ -101,6 +101,7 @@ model Inquiry {
   source                String             @default("website")
   consentAt             DateTime
   status                InquiryStatus      @default(NEW)
+  isRead                Boolean            @default(false)
   notificationStatus    NotificationStatus @default(PENDING)
   notificationAttempts  Int                @default(0)
   lastNotificationError String?
@@ -108,5 +109,6 @@ model Inquiry {
   createdAt             DateTime           @default(now())
   updatedAt             DateTime           @updatedAt
   @@index([status, createdAt])
+  @@index([isRead, createdAt])
   @@index([productId])
 }
