@@ -5,17 +5,17 @@ import { Search01Icon } from "hugeicons-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useReducedMotion } from "framer-motion";
 
-interface Column<T> {
+export interface DataTableColumn<T> {
   key: string;
   label: string;
   render?: (item: T) => ReactNode;
   className?: string;
 }
 
-interface DataTableProps<T> {
+export interface DataTableProps<T> {
   title: string;
   subtitle?: string;
-  columns: Column<T>[];
+  columns: DataTableColumn<T>[];
   data: T[];
   keyExtractor: (item: T) => string;
   emptyMessage?: string;
@@ -140,7 +140,7 @@ export function DataTable<T>({
                           >
                             {column.render
                               ? column.render(item)
-                              : (item as any)[column.key]}
+                              : String(item[column.key as keyof T])}
                           </td>
                         ))}
                       </motion.tr>

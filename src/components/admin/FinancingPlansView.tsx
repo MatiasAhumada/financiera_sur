@@ -4,21 +4,14 @@ import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { GenericModal, ConfirmModal } from "@/components/common";
 
-type Plan = {
-  id: string;
-  name: string;
-  description: string;
-  active: boolean;
-  displayOrder: number;
+import type {
+  FinancingPlan,
+  FinancingPlanForm,
+} from "@/interfaces/financingPlan.interface";
+interface FinancingPlanResponse extends FinancingPlan {
   _count?: { products: number };
-};
-type FormState = {
-  name: string;
-  description: string;
-  active: boolean;
-  displayOrder: number;
-};
-const emptyForm: FormState = {
+}
+const emptyForm: FinancingPlanForm = {
   name: "",
   description: "",
   active: true,
@@ -26,13 +19,13 @@ const emptyForm: FormState = {
 };
 
 export function FinancingPlansView() {
-  const [plans, setPlans] = useState<Plan[]>([]);
+  const [plans, setPlans] = useState<FinancingPlanResponse[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
-  const [form, setForm] = useState<FormState>(emptyForm);
-  const [editing, setEditing] = useState<Plan | null>(null);
-  const [deleting, setDeleting] = useState<Plan | null>(null);
+  const [form, setForm] = useState<FinancingPlanForm>(emptyForm);
+  const [editing, setEditing] = useState<FinancingPlanResponse | null>(null);
+  const [deleting, setDeleting] = useState<FinancingPlanResponse | null>(null);
   const [formOpen, setFormOpen] = useState(false);
   async function load() {
     const response = await fetch("/api/admin/financing-plans");
@@ -47,7 +40,7 @@ export function FinancingPlansView() {
     setError("");
     setFormOpen(true);
   }
-  function openEdit(plan: Plan) {
+  function openEdit(plan: FinancingPlanResponse) {
     setEditing(plan);
     setForm({
       name: plan.name,

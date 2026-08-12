@@ -1,5 +1,8 @@
 import { AxiosError } from "axios";
-import { ToastOptions } from "@/utils/toast.util";
+import type {
+  HandlerOptions,
+  ErrorWithMessage,
+} from "@/interfaces/handler.interface";
 import {
   toastSuccess,
   toastError,
@@ -7,14 +10,6 @@ import {
   toastInfo,
 } from "@/utils/toast.util";
 import { ERROR_MESSAGES } from "@/constants/error-messages.constant";
-
-interface HandlerOptions {
-  logToConsole?: boolean;
-  showToast?: boolean;
-  messagePrefix?: string;
-  defaultMessage?: string;
-  toastOptions?: ToastOptions;
-}
 
 function normalizeError(error: unknown): Error {
   if (error instanceof AxiosError) {
@@ -28,17 +23,16 @@ function normalizeError(error: unknown): Error {
     };
   }
 
-  if (error && typeof error === "object" && !("message" in error)) {
+  if (error instanceof Object && !("message" in error)) {
     return new Error(ERROR_MESSAGES.FORM_VALIDATION);
   }
 
   if (error instanceof Error) return error;
-  if (typeof error === "string") return new Error(error);
+  if (error instanceof String) return new Error(error.toString());
 
-  if (error && typeof error === "object") {
-    if ("message" in error && typeof (error as any).message === "string") {
-      return new Error((error as any).message);
-    }
+  if (error instanceof Object && "message" in error) {
+    const errorWithMessage = error as ErrorWithMessage;
+    if (errorWithMessage.message) return new Error(errorWithMessage.message);
     return new Error(JSON.stringify(error));
   }
 
@@ -54,7 +48,7 @@ export function clientErrorHandler(
     messagePrefix = "",
     defaultMessage = "Error desconocido",
     toastOptions = {},
-  }: HandlerOptions = {}
+  }: HandlerOptions = {},
 ): void {
   const normalizedError = normalizeError(error);
 
@@ -75,7 +69,7 @@ export function clientSuccessHandler(
     showToast = true,
     messagePrefix = "",
     toastOptions = {},
-  }: Omit<HandlerOptions, "defaultMessage"> = {}
+  }: Omit<HandlerOptions, "defaultMessage"> = {},
 ): void {
   if (showToast) {
     toastSuccess(`${messagePrefix}${message}`, toastOptions);
@@ -92,7 +86,7 @@ export function clientWarningHandler(
     showToast = true,
     messagePrefix = "",
     toastOptions = {},
-  }: Omit<HandlerOptions, "defaultMessage"> = {}
+  }: Omit<HandlerOptions, "defaultMessage"> = {},
 ): void {
   if (logToConsole) console.warn(message);
   if (showToast) {
@@ -110,7 +104,7 @@ export function clientInfoHandler(
     showToast = true,
     messagePrefix = "",
     toastOptions = {},
-  }: Omit<HandlerOptions, "defaultMessage"> = {}
+  }: Omit<HandlerOptions, "defaultMessage"> = {},
 ): void {
   if (logToConsole) console.info(message);
   if (showToast) {

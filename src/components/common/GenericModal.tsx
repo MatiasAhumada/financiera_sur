@@ -4,17 +4,10 @@ import { motion, AnimatePresence, type Variants } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Cancel01Icon } from "hugeicons-react";
 import { useReducedMotion } from "framer-motion";
-
-interface GenericModalProps {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-  title: string;
-  description?: string;
-  children: React.ReactNode;
-  footer?: React.ReactNode;
-  size?: "sm" | "md" | "lg" | "xl" | "2xl" | "4xl";
-  variant?: "default" | "dark";
-}
+import type {
+  GenericModalProps,
+  ConfirmModalProps,
+} from "@/interfaces/modal.interface";
 
 const SIZE_CLASSES = {
   sm: "max-w-sm",
@@ -109,9 +102,7 @@ export function GenericModal({
                 className={`flex items-center justify-between p-6 border-b border-neutral-800 ${headerBgClass}`}
               >
                 <div>
-                  <h2 className="text-lg font-semibold text-white">
-                    {title}
-                  </h2>
+                  <h2 className="text-lg font-semibold text-white">{title}</h2>
                   {description && (
                     <p className="text-sm text-neutral-400 mt-1">
                       {description}
@@ -141,19 +132,6 @@ export function GenericModal({
       )}
     </AnimatePresence>
   );
-}
-
-interface ConfirmModalProps {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-  title: string;
-  description: string;
-  onConfirm: () => void;
-  onCancel?: () => void;
-  confirmText?: string;
-  cancelText?: string;
-  variant?: "default" | "destructive";
-  loading?: boolean;
 }
 
 export function ConfirmModal({
